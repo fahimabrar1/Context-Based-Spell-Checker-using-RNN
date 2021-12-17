@@ -10,19 +10,29 @@ from bltk.langtools.banglachars import (digits,operators,punctuations,others)
 from numba import jit
 from numba.core.errors import NumbaDeprecationWarning, NumbaPendingDeprecationWarning
 import warnings
+import re
 
 warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
 warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 
 # function optimized to run on gpu
-@jit
+@jit(forceobj=True)
 def extract_sentence(df , tokenizer , SentenceHolder):
-       _contentHolderLength = SentenceHolder.shape[0]
-       for content in df:
-              if pd.isna(content) == False:
-                     print("Contnet :", content)
-                     sentence = tokenizer.word_tokenizer(content)
-                     print(sentence)
+       print("TOKENIZED SENTENCES")
+       senContainsGarbage =[]
+       for para in df:
+              sentences = tokenizer.sentence_tokenizer(para)
+              for i,sen in enumerate(sentences):
+                     if re.search(r'[a-zA-Z]', sen):
+                            print(sen[i])
+                            senContainsGarbage.append(i)
+
+              if len(senContainsGarbage) > 0:
+                     for indexValue in senContainsGarbage:
+                            sentences.pop(indexValue)
+
+              for sen in sentences:
+                     print(sen)
 
 
 
@@ -98,7 +108,7 @@ if __name__=="__main__":
 
        # Just type the path of the csv file
        #df = pd.read_csv (r'D:\Python\Context Based Spell Checker using RNN\Data Extracted\dhakatribunebangla_1.csv')
-       df = pd.read_csv (r'D:\Python\Context Based Spell Checker using RNN\Test Sheets\Test By Fahim.csv')
+       df = pd.read_csv (r'D:\Python\Context Based Spell Checker using RNN\Processings\Test Sheets\Test By Fahim.csv')
 
 
        wordHolder = pd.DataFrame()
