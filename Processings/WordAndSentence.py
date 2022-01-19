@@ -97,11 +97,12 @@ if __name__=="__main__":
 
        print(df['text'])
        #extract_words(df['data'])
-       extract_sentence(df['text'] , tokenizer , SentenceHolder)
+
+       #extract_sentence(df['text'] , tokenizer , SentenceHolder)
 
 
-       # word_df = pd.read_csv (r'/Processed/BengaliSentiment_SentenceCorpus.csv')
-       # extract_words(word_df['SentenceList'],wordHolder)
-       # print(wordHolder)
+       word_df = pd.read_csv (r'/Processed/BengaliSentiment_SentenceCorpus.csv')
+       extract_words(word_df['SentenceList'],wordHolder)
+       print(wordHolder)
        #
        # print("End")
