@@ -19,7 +19,10 @@ warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 #@jit(forceobj=True)
 def extract_sentence(df , tokenizer , SentenceHolder):
        print("TOKENIZED SENTENCES")
+       ina = 1
        for para in df:
+              print(ina)
+              ina += 1
               sentences = tokenizer.sentence_tokenizer(para)
               for i,sen in enumerate(sentences):
                      sen = "".join(i for i in sen if i in ["।"] or 2432 <= ord(i) <= 2559 or ord(i) == 32)
@@ -30,7 +33,7 @@ def extract_sentence(df , tokenizer , SentenceHolder):
 
 
        print(SentenceHolder)
-       SentenceHolder.to_csv('SentenceCorpus.csv', index=False)
+       SentenceHolder.to_csv('BengaliSentiment_SentenceCorpus.csv', index=False)
 
 
 
@@ -38,9 +41,12 @@ def extract_sentence(df , tokenizer , SentenceHolder):
 #@jit
 def extract_words(df,wordHolder):
        _contentHolderLength = wordHolder.shape[0]
+       ina = 1
        for content in df:
+              ina+=1
+              print(ina)
               if pd.isna(content) == False:
-                     print("Contnet :" , content)
+                     #print("Contnet :" , content)
                      words = tokenizer.word_tokenizer(content)
                      print(words)
                      holder =[]
@@ -54,11 +60,11 @@ def extract_words(df,wordHolder):
                      if len(holder) > 0:
                            for i in holder:
                                   words.pop(i)
-                     print("Words: ",words)
+                     #print("Words: ",words)
                      for i in words:
                             i = i.strip()
                             wordHolder.loc[len(wordHolder.index)] = i
-       wordHolder.to_csv('WordCorpus.csv' , index=False)
+       wordHolder.to_csv('BengaliSentiment_WordCorpus.csv' , index=False)
 
 
 
@@ -76,7 +82,8 @@ if __name__=="__main__":
 
        # Just type the path of the csv file
        #df = pd.read_csv (r'D:\Python\Context Based Spell Checker using RNN\Data Extracted\dhakatribunebangla_1.csv')
-       df = pd.read_csv (r'D:\Python\Context Based Spell Checker using RNN\Processings\Test Sheets\Test By Fahim.csv')
+       df = pd.read_csv (r'D:\Python\Context Based Spell Checker using RNN\Processings\Data\bengaliSentiment.csv')
+
 
 
        wordHolder = pd.DataFrame()
@@ -89,11 +96,11 @@ if __name__=="__main__":
        # Tokenizing words
        print('TOKENIZED WORDS')
 
-       print(df['content'])
-       # extract_words(df['content'])
-       #extract_sentence(df['content'] , tokenizer , SentenceHolder)
+       print(df['data'])
+       #extract_words(df['data'])
+       extract_sentence(df['data'] , tokenizer , SentenceHolder)
 
-       word_df = pd.read_csv(r'D:\Python\Context Based Spell Checker using RNN\Processings\SentenceCorpus.csv')
+       word_df = pd.read_csv (r'/Processed/BengaliSentiment_SentenceCorpus.csv')
        extract_words(word_df['SentenceList'],wordHolder)
        print(wordHolder)
 
