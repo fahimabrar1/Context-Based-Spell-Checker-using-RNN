@@ -16,81 +16,49 @@ warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
 warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 
 # function optimized to run on gpu
-@jit(forceobj=True)
+#@jit(forceobj=True)
 def extract_sentence(df , tokenizer , SentenceHolder):
        print("TOKENIZED SENTENCES")
-       senContainsGarbage =[]
        for para in df:
               sentences = tokenizer.sentence_tokenizer(para)
               for i,sen in enumerate(sentences):
-                     if re.search(r'[a-zA-Z]', sen):
-                            print(sen[i])
-                            senContainsGarbage.append(i)
+                     sen = "".join(i for i in sen if i in ["।"] or 2432 <= ord(i) <= 2559 or ord(i) == 32)
+                     sen = " ".join(sen.split())
+                     sen = sen[:-1]
+                     sen = sen.strip()
+                     SentenceHolder.loc[len(SentenceHolder.index)] = [sen]
 
-              if len(senContainsGarbage) > 0:
-                     for indexValue in senContainsGarbage:
-                            sentences.pop(indexValue)
 
-              for sen in sentences:
-                     print(sen)
-
+       print(SentenceHolder)
+       SentenceHolder.to_csv('SentenceCorpus.csv', index=False)
 
 
 
 # function optimized to run on gpu
-@jit
-def extract_words(df):
+#@jit
+def extract_words(df,wordHolder):
        _contentHolderLength = wordHolder.shape[0]
        for content in df:
               if pd.isna(content) == False:
                      print("Contnet :" , content)
-                     sentence = tokenizer.word_tokenizer(content)
-                     print(sentence)
-                     nwordsindex = []
-                     for i, word in enumerate(sentence):
-                            nowBreak = False
-                            for char in word:
-                                   if(char == others[5] or char == others[6]):
-                                          nwordsindex.append(i)
-                                          nowBreak = True
+                     words = tokenizer.word_tokenizer(content)
+                     print(words)
+                     holder =[]
+                     for i,e in enumerate(words):
+                            for j in e:
+                                   if( 2544 > ord(j) > 2533 ):
+                                          print("J: ",j,"    i: ",i)
+                                          holder.append(i)
                                           break
-
-                            if nowBreak == False:
-                                   for char in word:
-                                          for d in digits:
-                                                 if (char == d):
-                                                        nwordsindex.append(i)
-                                                        nowBreak = True
-                                                        break
-                                          if nowBreak == True:
-                                                 break
-
-                            if nowBreak == False:
-
-                                   for char in word:
-                                          for p in punctuations:
-                                                 if (char == p):
-                                                        nwordsindex.append(i)
-                                                        nowBreak = True
-                                                        break
-                                          if nowBreak == True:
-                                                 break
-
-
-                     nwordsindex.reverse()
-
-                     print("nwordsindex: ",nwordsindex)
-
-                     if len(nwordsindex) > 0:
-                            for i in nwordsindex:
-                                   sentence.pop(i)
-                     print("WORDS :       ", sentence)
-
-                     for _word in sentence:
-                            #print(wordHolder)
-                            #print(wordHolder.shape[0])
-                            wordHolder.loc[_contentHolderLength]=_word
-                            _contentHolderLength += 1
+                     holder.reverse()
+                     if len(holder) > 0:
+                           for i in holder:
+                                  words.pop(i)
+                     print("Words: ",words)
+                     for i in words:
+                            i = i.strip()
+                            wordHolder.loc[len(wordHolder.index)] = i
+       wordHolder.to_csv('WordCorpus.csv' , index=False)
 
 
 
@@ -115,6 +83,7 @@ if __name__=="__main__":
        wordHolder['wordList'] = []
        SentenceHolder = pd.DataFrame()
        SentenceHolder['SentenceList'] = []
+       # SentenceHolder = []
 
        tokenizer = Tokenizer()
        # Tokenizing words
@@ -122,8 +91,10 @@ if __name__=="__main__":
 
        print(df['content'])
        # extract_words(df['content'])
-       extract_sentence(df['content'] , tokenizer , SentenceHolder)
+       #extract_sentence(df['content'] , tokenizer , SentenceHolder)
 
+       word_df = pd.read_csv(r'D:\Python\Context Based Spell Checker using RNN\Processings\SentenceCorpus.csv')
+       extract_words(word_df['SentenceList'],wordHolder)
        print(wordHolder)
 
        print("End")
