@@ -18,7 +18,7 @@ warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 # function optimized to run on gpu
 #@jit(forceobj=True)
 def extract_sentence(df , tokenizer , SentenceHolder):
-       print("TOKENIZED SENTENCES")
+       print("Starting Sentence Processing.")
        ina = 1
        for para in df:
               print(ina)
@@ -41,6 +41,7 @@ def extract_sentence(df , tokenizer , SentenceHolder):
 # function optimized to run on gpu
 #@jit
 def extract_words(df,wordHolder):
+       print("Starting Word Processing.")
        _contentHolderLength = wordHolder.shape[0]
        ina = 1
        for content in df:
@@ -49,7 +50,7 @@ def extract_words(df,wordHolder):
               if pd.isna(content) == False:
                      #print("Contnet :" , content)
                      words = tokenizer.word_tokenizer(content)
-                     print(words)
+                     #print(words)
                      holder =[]
                      for i,e in enumerate(words):
                             for j in e:
@@ -65,7 +66,7 @@ def extract_words(df,wordHolder):
                      for i in words:
                             i = i.strip()
                             wordHolder.loc[len(wordHolder.index)] = i
-       wordHolder.to_csv('BengaliSentiment_WordCorpus.csv' , index=False)
+       wordHolder.to_csv('full_doc_test_SentenceCorpus.csv' , index=False)
 
 
 
@@ -101,7 +102,7 @@ if __name__=="__main__":
        #extract_sentence(df['text'] , tokenizer , SentenceHolder)
 
 
-       word_df = pd.read_csv (r'/Processed/BengaliSentiment_SentenceCorpus.csv')
+       word_df = pd.read_csv (r'D:\Python\Context Based Spell Checker using RNN\Processings\Processed\full_doc_test_SentenceCorpus.csv')
        extract_words(word_df['SentenceList'],wordHolder)
        print(wordHolder)
        #
